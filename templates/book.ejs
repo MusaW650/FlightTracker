@@ -1,0 +1,59 @@
+<!--This is the file where we include the form where the user submits information to book a flight-->
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>Booking</title>
+  </head>
+
+  <body>
+    <h1>Book Order Form</h1>
+	<script>
+		window.onsubmit = runSubmit;
+		function runSubmit(){
+			pN = process.argv[2];
+            res = `http://localhost:${pN}`;
+            document.getElementById("x").action = res;
+		}
+	</script>
+    <form method ="post" id ="x" >
+      <fieldset>
+        <label><strong>Name:</strong><input type="text" name="name" /></label>
+        <label
+          ><strong>Email Address:</strong
+          ><input type="email" name="email" /></label
+        ><br />
+        <label><strong>CRN:</strong><input type="text" name="crn"></label>
+        <div id="hidden">
+            The Price For This Flight is: 
+        </div><!--Diplays the price of the flight once user clicks on the flight.-->
+        <script>
+            const crn = document.querySelector(`crn`);
+            
+        </script>
+        <br /><br />
+        <strong>Background Information:</strong>
+        <fieldset>
+          <label> <input type="text" name="info" /></label>
+        </fieldset>
+      </fieldset>
+
+      <br />
+      <input type="reset" />
+      <input type="submit" value="Submit Application" />
+      <hr />
+      <a href="/">HOME</a>
+      <!--****GOES TO HOME DIRECTORY ****-->
+      <script>
+        window.onsubmit = run;
+        function run() {
+          window.confirm(
+            "Are you sure you want to submit your application?\nYou will not be able to change your information once submitted.\n"
+          )
+            ? true
+            : false;
+        }
+      </script>
+    </form>
+  </body>
+</html>
