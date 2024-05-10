@@ -1,31 +1,86 @@
-
 <!doctype html>
 <html lang="en">
-
 <head>
-	<meta charset="utf-8" />
-	<title>Flights</title>
+    <meta charset="utf-8" />
+    <title>Flights</title>
 </head>
-
 <body>
-	<h1>Welcome to Flight Tracker</h1>
-        <h3>Flight Information</h3>
-        <ul>
-                <li>See all the current flights happening around the world<a href="/viewflights">Application</a> </li>
-        </ul>
-        <hr>
-        <h3>Book a Flight</h3>
-        <ul>
-                <li>Click here to book a flight <a href="/book">from our database</a></li>
-        </ul>
-        <hr>
-        <h3>Cancel your flight</h3>
-        <ul>
-                <li>To cancel your flight, click <a href="/remove">here</a></li>
-        </ul>
-        <hr>
-        
+    <h1>Welcome to Flight Tracker</h1>
+    <h3>Flight Information</h3>
+    <ul>
+        <li>See all the current flights happening around the world <a href="/viewflights">Application</a></li>
+    </ul>
+    <hr>
+    <h3>Book a Flight</h3>
+    <ul>
+        <li>Click here to book a flight <a href="/book">from our database</a></li>
+    </ul>
+    <hr>
+    <h3>Cancel your flight</h3>
+    <ul>
+        <li>To cancel your flight, click <a href="/remove">here</a></li>
+    </ul>
+    <hr>
+    <h3>Fetch Airline Flights</h3>
+    <input type="text" id="airlineIdent" placeholder="Enter Airline Ident (e.g., UA)" />
+    <input type="datetime-local" id="flightTime" />
+    <button id="fetchAirlineFlightsBtn">Fetch Airline Flights</button>
+    <pre id="airlineFlightsData"></pre>
+    <hr>
+    <h3>Fetch Airline Info</h3>
+    <input type="text" id="airlineName" placeholder="Enter Airline Name (e.g. Qatar Airways)"/>
+    <button id="fetchAirlineInfoBtn">Fetch Airline Info</button>
+    <pre id="airlineInfo"></pre>
 
+    <script>
+        document.getElementById('fetchAirlineFlightsBtn').addEventListener('click', function() {
+            const ident = document.getElementById('airlineIdent').value;
+            const time = document.getElementById('flightTime').value;
+            if (!ident || !time) {
+                alert('Please enter both airline ident and time');
+                return;
+            }
+            fetch(`/api/airline-flights?ident=${ident}&time=${encodeURIComponent(time)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('airlineFlightsData').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('airlineFlightsData').textContent = 'Error fetching data';
+                });
+        });
+
+
+        //for airline info
+        document.getElementById('fetchAirlineInfoBtn').addEventListener('click', function() {
+            const name = document.getElementById('airlineName').value;
+            if (!name){
+                alert('Please enter airline name');
+                return;
+            }
+            fetch(`/api/airline-info?name=${name}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    document.getElementById('airlineInfo').textContent = JSON.stringify(data, null, 2);
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('airlineInfo').textContent = 'Error fetching data';
+                });
+        });
+
+
+    </script>
 </body>
-
 </html>

@@ -16,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/MusaW650/FlightTracker/issues"
   },
-  "homepage": "https://github.com/MusaW650/FlightTracker#readme"
+  "homepage": "https://github.com/MusaW650/FlightTracker#readme",
+  "dependencies": {
+    "node-fetch": "^3.3.2"
+  }
 }

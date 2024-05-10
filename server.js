@@ -1,61 +1,93 @@
-const fs = require("fs");
 const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 require("dotenv").config();
-const { MongoClient, ObjectId } = require("mongodb");
-process.stdin.setEncoding("utf8");
-const args = process.argv.slice(2);
 
+const args = process.argv.slice(2);
 const portNumber = args[0];
+
 app.set("view engine", "ejs");
 app.set("views", "./templates");
 app.use(bodyParser.json());
 app.use(express.json());
 
-const http = require('https');
+// Function to fetch flights from Flightera API
+async function fetchAirlineFlights(ident, time) {
+  const fetch = (await import('node-fetch')).default;
+  const url = `https://flightera-flight-data.p.rapidapi.com/airline/flights?ident=${ident}&time=${encodeURIComponent(time)}`;
+  const options = {
+    method: 'GET',
+    headers: {
+      'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
+      'X-RapidAPI-Host': 'flightera-flight-data.p.rapidapi.com'
+    }
+  };
 
-const options = {
-	method: 'GET',
-	hostname: 'sky-scrapper.p.rapidapi.com',
-	port: null,
-	path: '/api/v1/flights/getFlightDetails?itineraryId=%3CREQUIRED%3E&legs=%5B%7B%22destination%22%3A%22LOND%22%2C%22origin%22%3A%22LAXA%22%2C%22date%22%3A%222024-04-11%22%7D%5D&adults=1&currency=USD',
-	headers: {
-		'X-RapidAPI-Key': '0c583d7cb2msh81fa754ebbe153cp1b797djsn47c8d069c3a7',
-		'X-RapidAPI-Host': 'sky-scrapper.p.rapidapi.com'
-	}
-};
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error('Error fetching data:', error);
+    throw error;
+  }
+}
 
-// Log the request options
-console.log("Request options:", options);
+// Endpoint to fetch flights for a specific airline and time
+app.get("/api/airline-flights", async (req, res) => {
+  const { ident, time } = req.query;
 
-const req = http.request(options, function (res) {
-	// Log the response status and headers
-	console.log(`STATUS: ${res.statusCode}`);
-	console.log(`HEADERS: ${JSON.stringify(res.headers)}`);
-	const chunks = [];
+  if (!ident || !time) {
+    res.status(400).send("Missing required parameters: ident and time");
+    return;
+  }
 
-	res.on('data', function (chunk) {
-		// Log each chunk of data as it is received
-		console.log("Chunk received:", chunk);
-		chunks.push(chunk);
-	});
-
-	res.on('end', function () {
-		const body = Buffer.concat(chunks);
-		// Log the complete response body
-		console.log(`BODY: ${body.toString()}`);
-	});
+  try {
+    const data = await fetchAirlineFlights(ident, time);
+    res.json(data);
+  } catch (error) {
+    res.status(500).send(`Error fetching data: ${error.message}`);
+  }
 });
 
-req.on('error', (e) => {
-	// Log any errors that occur during the request
-	console.error(`Problem with request: ${e.message}`);
-});
+async function fetchAirlineInfo(name) {
+        const fetch = (await import('node-fetch')).default;
+        const url = `https://flightera-flight-data.p.rapidapi.com/airline/info?name=${name}`;
+        const options = {
+          method: 'GET',
+          headers: {
+            'X-RapidAPI-Key': 'c1fc13ac94msh47eede7e9019808p11da91jsn04a20fac8224',
+            'X-RapidAPI-Host': 'flightera-flight-data.p.rapidapi.com'
+          }
+        };
+      
+        try {
+          const response = await fetch(url, options);
+          const result = await response.json();
+          return result;
+        } catch (error) {
+          console.error('Error fetching data:', error);
+          throw error;
+        }
+      }
+      
+      // Endpoint to fetch flights for a specific airline and time
+      app.get("/api/airline-info", async (req, res) => {
+        const { name } = req.query;
+      
+        if (!name) {
+          res.status(400).send("Missing required parameter: name");
+          return;
+        }
+      
+        try {
+          const data = await fetchAirlineInfo(name);
+          res.json(data);
+        } catch (error) {
+          res.status(500).send(`Error fetching data: ${error.message}`);
+        }
+      });
 
-req.end();
-
-// Example endpoint to ensure your server is running
 app.get("/", (req, res) => {
   res.render("home");
 });
