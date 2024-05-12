@@ -92,8 +92,26 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
-app.get("/vewflights", (req, res) => {
+app.get('/viewflights', (req, res) => {
   res.render("view");
+});
+
+app.get('/book', (req, res) => {
+  res.render("book");
+});
+
+app.post('/booking', (req, res) => {
+  const name = req.body.name
+  res.render("confirmation");
+});
+
+app.get('/remove', (req, res) => {
+  res.render("cancel");
+});
+
+app.post('/delete', (req, res) => {
+  const name = req.body.name
+  res.render("cancel");
 });
 
 app.listen(portNumber, () => {
