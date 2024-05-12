@@ -92,6 +92,10 @@ app.get("/", (req, res) => {
   res.render("home");
 });
 
+app.get("/vewflights", (req, res) => {
+  res.render("view");
+});
+
 app.listen(portNumber, () => {
   console.log(`Web server started and running at http://localhost:${portNumber}`);
   startCLI();
