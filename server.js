@@ -96,16 +96,17 @@ app.get('/viewflights', (req, res) => {
   res.render("view");
 });
 
-app.get('/book', (req, res) => {
+app.get('/book', (req, res) => { //TODO add to mongodb
   res.render("book");
 });
 
 app.post('/booking', (req, res) => {
-  const name = req.body.name
-  res.render("confirmation");
+  const passengername = req.body.passengername; //not sure why its not able to retrieve the info the user inputs in the booking page
+  const crn = req.body.crn 
+  res.render("confirmation", { passengername, crn })
 });
 
-app.get('/remove', (req, res) => {
+app.get('/remove', (req, res) => { //TODO remove from mongodb
   res.render("cancel");
 });
 
