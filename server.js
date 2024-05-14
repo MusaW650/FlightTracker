@@ -10,6 +10,8 @@ app.set("view engine", "ejs");
 app.set("views", "./templates");
 app.use(bodyParser.json());
 app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 // Function to fetch flights from Flightera API
 async function fetchAirlineFlights(ident, time) {
@@ -101,18 +103,22 @@ app.get('/book', (req, res) => { //TODO add to mongodb
 });
 
 app.post('/booking', (req, res) => {
-  const passengername = req.body.passengername; //not sure why its not able to retrieve the info the user inputs in the booking page
+  const passengername = req.body.passengername; 
   const crn = req.body.crn 
-  res.render("confirmation", { passengername, crn })
+  const info = req.body.info 
+
+  res.render("confirmation", { passengername, crn, info })
 });
 
 app.get('/remove', (req, res) => { //TODO remove from mongodb
+  
   res.render("cancel");
 });
 
 app.post('/delete', (req, res) => {
-  const name = req.body.name
-  res.render("cancel");
+  const passenger = req.body.passenger
+  const flightname = req.body.flightname
+  res.render("confirmcancel", {passenger, flightname});
 });
 
 app.listen(portNumber, () => {
