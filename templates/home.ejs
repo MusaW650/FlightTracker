@@ -4,21 +4,45 @@
     <meta charset="utf-8" />
     <title>Flights</title>
     <style>
-        body {
-            background-image: url('planebackground.jpg');
+        .containerImage {
+            position: fixed; 
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('/public/planebackground.png');
             background-size: cover;
             background-repeat: no-repeat;
             background-position: center;
-        }     
-      
+            z-index: -1; 
+        }
     </style>
 </head>
 <body>
+    <!-- <div class="containerImage"> -->
+<div class="containerImage">
+    <!-- <img src="/public/planebackground.png"> -->
+
+
+    <!-- testing css works regularly-->
+    <style>
+        h1 {
+            color:red;
+        }
+    </style>
+
     <h1>Welcome to Flight Tracker</h1>
     <h3>Flight Information</h3>
     <ul>
-        <li>See all the current flights happening around the world <a href="/viewflights">Application</a></li>
+        <!-- <li>See all the current flights happening around the world <a href="/viewflights">Application</a></li> -->
+        <li>Fetch Flights by airline and date <a href="/viewflights"> Airline Flights</a></li>
     </ul>
+    <hr>
+    <h3>Fetch Airline Info</h3>
+    <ul>
+    <li>Fetch informaton about an airline prior to booking with <a href="/airline"> Airline Info </a></li>
+</ul>
+
     <hr>
     <h3>Book a Flight</h3>
     <ul>
@@ -29,67 +53,9 @@
     <ul>
         <li>To cancel your flight, click <a href="/remove">here</a></li>
     </ul>
-    <hr>
-    <h3>Fetch Airline Flights</h3>
-    <input type="text" id="airlineIdent" placeholder="Enter Airline Ident (e.g., UA)" />
-    <input type="datetime-local" id="flightTime" />
-    <button id="fetchAirlineFlightsBtn">Fetch Airline Flights</button>
-    <pre id="airlineFlightsData"></pre>
-    <hr>
-    <h3>Fetch Airline Info</h3>
-    <input type="text" id="airlineName" placeholder="Enter Airline Name (e.g. Qatar Airways)"/>
-    <button id="fetchAirlineInfoBtn">Fetch Airline Info</button>
-    <pre id="airlineInfo"></pre>
+  
+    
+</div> 
 
-    <script>
-        document.getElementById('fetchAirlineFlightsBtn').addEventListener('click', function() {
-            const ident = document.getElementById('airlineIdent').value;
-            const time = document.getElementById('flightTime').value;
-            if (!ident || !time) {
-                alert('Please enter both airline ident and time');
-                return;
-            }
-            fetch(`/api/airline-flights?ident=${ident}&time=${encodeURIComponent(time)}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('airlineFlightsData').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('airlineFlightsData').textContent = 'Error fetching data';
-                });
-        });
-
-
-        //for airline info
-        document.getElementById('fetchAirlineInfoBtn').addEventListener('click', function() {
-            const name = document.getElementById('airlineName').value;
-            if (!name){
-                alert('Please enter airline name');
-                return;
-            }
-            fetch(`/api/airline-info?name=${name}`)
-                .then(response => {
-                    if (!response.ok) {
-                        throw new Error(`HTTP error! status: ${response.status}`);
-                    }
-                    return response.json();
-                })
-                .then(data => {
-                    document.getElementById('airlineInfo').textContent = JSON.stringify(data, null, 2);
-                })
-                .catch(error => {
-                    console.error('Error fetching data:', error);
-                    document.getElementById('airlineInfo').textContent = 'Error fetching data';
-                });
-        });
-
-
-    </script>
 </body>
 </html>

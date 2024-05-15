@@ -1,32 +1,63 @@
-    <!-- prob not needed, will delete -->
-
 <!doctype html>
 <html lang="en">
-
 <head>
-	<meta charset="utf-8" />
-	<title>Insert</title>
+    <meta charset="utf-8" />
+    <title>View Flights by Airline and Date</title>
 </head>
-
 <body>
-	<h1>Select Flight</h1>
-	<form id="apply" action="/submit" method="post">
-		<fieldset>
-
-        <strong><label for="name">Flight Name:</label></strong>
-        <input type="text" id="name" name="name" required>
-
-	</fieldset>
-    <!-- possibly will add more stuff -->
-
-	<br>
-
-        <button type="submit" onclick="confirmSubmit()">Submit Application</button> <hr>
-    </form>
-	<a href="/">HOME</a>
-
-
-
+    <h1>View Flights by Airline and Date</h1>
+    <fieldset>
+        <input type="text" id="airlineIdent" placeholder="Enter Airline Ident (e.g., UA)" style="width: 30%" />
+        <input type="datetime-local" id="flightTime" />
+        <button id="fetchAirlineFlightsBtn">Fetch Flights</button>
+	<hr>
+        <table id="flightsTable" border="1">
+            <thead>
+                <tr>
+                    <th>Flight Number</th>
+                    <th>Date</th>
+                    <th>Departure</th>
+                    <th>Arrival</th>
+                    <th>Status</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </fieldset>
+    <br>
+    <a href="/">HOME</a>
+    <script>
+        document.getElementById('fetchAirlineFlightsBtn').addEventListener('click', function () {
+            const ident = document.getElementById('airlineIdent').value;
+            const time = document.getElementById('flightTime').value;
+            if (!ident || !time) {
+                alert('Please enter both airline ident and time');
+                return;
+            }
+            fetch(`/api/airline-flights?ident=${ident}&time=${encodeURIComponent(time)}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('flightsTable').getElementsByTagName('tbody')[0];
+                    const rows = data.flights.map(flight => 
+                        `<tr>
+                            <td>${flight.flnr}</td>
+                            <td>${flight.date}</td>
+                            <td>${flight.departure_ident}</td>
+                            <td>${flight.arrival_ident}</td>
+                            <td>${flight.status}</td>
+                        </tr>`).join('');
+                    tableBody.innerHTML = rows; 
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    document.getElementById('airlineFlightsData').textContent = 'Error fetching data';
+                });
+        });
+    </script>
 </body>
-
 </html>

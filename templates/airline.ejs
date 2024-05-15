@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8" />
+    <title>Airline Info</title>
+</head>
+<body>
+    <h1>View Information about Airline</h1>
+    <fieldset>
+        <input type="text" id="airlineName" placeholder="Enter Airline Name (e.g. Qatar Airways)" style="width: 30%"/>
+        <button id="fetchAirlineInfoBtn">Fetch Airline Info</button>
+        <hr>
+        <table id="airlineInfoTable" border="1">
+            <thead>
+                <tr>
+                    <th>Ident</th>
+                    <th>ICAO</th>
+                    <th>IATA</th>
+                    <th>Name</th>
+                    <th>Call Sign</th>
+                    <th>Country</th>
+                    <th>Founding Date</th>
+                    <th>Start Date</th>
+                    <th>Website</th>
+                    <th>Alliance</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </fieldset>
+    <br>
+    <a href="/">HOME</a>
+    <script>
+        document.getElementById('fetchAirlineInfoBtn').addEventListener('click', function() {
+            const name = document.getElementById('airlineName').value;
+            if (!name){
+                alert('Please enter airline name');
+                return;
+            }
+            fetch(`/api/airline-info?name=${name}`)
+                .then(response => {
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+                    return response.json();
+                })
+                .then(data => {
+                    const tableBody = document.getElementById('airlineInfoTable').getElementsByTagName('tbody')[0];
+                    const rows = data.map(airline => `
+                        <tr>
+                            <td>${airline.ident || ''}</td>
+                            <td>${airline.icao || ''}</td>
+                            <td>${airline.iata || ''}</td>
+                            <td>${airline.name || ''}</td>
+                            <td>${airline.callsign || ''}</td>
+                            <td>${airline.country || ''}</td>
+                            <td>${airline.founding_date ? new Date(airline.founding_date).toLocaleDateString() : ''}</td>
+                            <td>${airline.start_date ? new Date(airline.start_date).toLocaleDateString() : ''}</td>
+                            <td><a href="${airline.website || '#'}" target="_blank">${airline.website || ''}</a></td>
+                            <td>${airline.alliance || ''}</td>
+                        </tr>
+                    `).join('');
+                    tableBody.innerHTML = rows;
+                })
+                .catch(error => {
+                    console.error('Error fetching data:', error);
+                    tableBody.innerHTML = '<tr><td colspan="10">Error fetching data</td></tr>';
+                });
+        });
+    </script>
+</body>
+</html>

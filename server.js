@@ -2,7 +2,9 @@ const express = require("express");
 const app = express();
 const bodyParser = require('body-parser');
 require("dotenv").config();
+const path = require('path');
 
+app.use(express.static('public'));
 const args = process.argv.slice(2);
 const portNumber = args[0];
 
@@ -13,7 +15,6 @@ app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
 
-// Function to fetch flights from Flightera API
 async function fetchAirlineFlights(ident, time) {
   const fetch = (await import('node-fetch')).default;
   const url = `https://flightera-flight-data.p.rapidapi.com/airline/flights?ident=${ident}&time=${encodeURIComponent(time)}`;
@@ -35,7 +36,6 @@ async function fetchAirlineFlights(ident, time) {
   }
 }
 
-// Endpoint to fetch flights for a specific airline and time
 app.get("/api/airline-flights", async (req, res) => {
   const { ident, time } = req.query;
 
@@ -73,7 +73,6 @@ async function fetchAirlineInfo(name) {
         }
       }
       
-      // Endpoint to fetch flights for a specific airline and time
       app.get("/api/airline-info", async (req, res) => {
         const { name } = req.query;
       
@@ -96,6 +95,10 @@ app.get("/", (req, res) => {
 
 app.get('/viewflights', (req, res) => {
   res.render("view");
+});
+
+app.get('/airline', (req, res) => {
+        res.render("airline");
 });
 
 app.get('/book', (req, res) => { //TODO add to mongodb
