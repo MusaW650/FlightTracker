@@ -1,10 +1,11 @@
 const express = require("express");
 const app = express();
-const bodyParser = require('body-parser');
+const bodyParser = require("body-parser");
 require("dotenv").config();
-const path = require('path');
+const path = require("path");
+const { MongoClient, ObjectId } = require("mongodb");
 
-app.use(express.static('public'));
+app.use(express.static("public"));
 const args = process.argv.slice(2);
 const portNumber = args[0];
 
@@ -14,16 +15,17 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-
 async function fetchAirlineFlights(ident, time) {
-  const fetch = (await import('node-fetch')).default;
-  const url = `https://flightera-flight-data.p.rapidapi.com/airline/flights?ident=${ident}&time=${encodeURIComponent(time)}`;
+  const fetch = (await import("node-fetch")).default;
+  const url = `https://flightera-flight-data.p.rapidapi.com/airline/flights?ident=${ident}&time=${encodeURIComponent(
+    time
+  )}`;
   const options = {
-    method: 'GET',
+    method: "GET",
     headers: {
-      'X-RapidAPI-Key': process.env.RAPIDAPI_KEY,
-      'X-RapidAPI-Host': 'flightera-flight-data.p.rapidapi.com'
-    }
+      "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+      "X-RapidAPI-Host": "flightera-flight-data.p.rapidapi.com",
+    },
   };
 
   try {
@@ -31,7 +33,7 @@ async function fetchAirlineFlights(ident, time) {
     const result = await response.json();
     return result;
   } catch (error) {
-    console.error('Error fetching data:', error);
+    console.error("Error fetching data:", error);
     throw error;
   }
 }
@@ -53,79 +55,131 @@ app.get("/api/airline-flights", async (req, res) => {
 });
 
 async function fetchAirlineInfo(name) {
-        const fetch = (await import('node-fetch')).default;
-        const url = `https://flightera-flight-data.p.rapidapi.com/airline/info?name=${name}`;
-        const options = {
-          method: 'GET',
-          headers: {
-            'X-RapidAPI-Key': 'c1fc13ac94msh47eede7e9019808p11da91jsn04a20fac8224',
-            'X-RapidAPI-Host': 'flightera-flight-data.p.rapidapi.com'
-          }
-        };
-      
-        try {
-          const response = await fetch(url, options);
-          const result = await response.json();
-          return result;
-        } catch (error) {
-          console.error('Error fetching data:', error);
-          throw error;
-        }
-      }
-      
-      app.get("/api/airline-info", async (req, res) => {
-        const { name } = req.query;
-      
-        if (!name) {
-          res.status(400).send("Missing required parameter: name");
-          return;
-        }
-      
-        try {
-          const data = await fetchAirlineInfo(name);
-          res.json(data);
-        } catch (error) {
-          res.status(500).send(`Error fetching data: ${error.message}`);
-        }
-      });
+  const fetch = (await import("node-fetch")).default;
+  const url = `https://flightera-flight-data.p.rapidapi.com/airline/info?name=${name}`;
+  const options = {
+    method: "GET",
+    headers: {
+      "X-RapidAPI-Key": process.env.RAPIDAPI_KEY,
+      "X-RapidAPI-Host": "flightera-flight-data.p.rapidapi.com",
+    },
+  };
+
+  try {
+    const response = await fetch(url, options);
+    const result = await response.json();
+    return result;
+  } catch (error) {
+    console.error("Error fetching data:", error);
+    throw error;
+  }
+}
+
+app.get("/api/airline-info", async (req, res) => {
+  const { name } = req.query;
+
+  if (!name) {
+    res.status(400).send("Missing required parameter: name");
+    return;
+  }
+
+  try {
+    const data = await fetchAirlineInfo(name);
+    res.json(data);
+  } catch (error) {
+    res.status(500).send(`Error fetching data: ${error.message}`);
+  }
+});
 
 app.get("/", (req, res) => {
   res.render("home");
 });
 
-app.get('/viewflights', (req, res) => {
+app.get("/viewflights", (req, res) => {
   res.render("view");
 });
 
-app.get('/airline', (req, res) => {
-        res.render("airline");
+app.get("/airline", (req, res) => {
+  res.render("airline");
 });
 
-app.get('/book', (req, res) => { //TODO add to mongodb
+app.get("/book", (req, res) => {
+  //TODO add to mongodb
   res.render("book");
 });
 
-app.post('/booking', (req, res) => {
-  const passengername = req.body.passengername; 
-  const crn = req.body.crn 
-  const price = req.body.price 
-
-  res.render("confirmation", { passengername, crn, price })
+app.post("/booking", async (req, res) => {
+  const client = new MongoClient(process.env.MONGO_CONNECTION_STRING);
+  try {
+        await client.connect();
+        const db = client.db(process.env.MONGO_DB_NAME);
+        const collection = db.collection(process.env.MONGO_COLLECTION);
+         let {   passengername, crn, price, email } = req.body;
+         if (price == "E") {
+                price = 1000;
+         } else if (price == "P") {
+                price = 850;
+         } else {
+                price = 700;
+         }
+        const result = await collection.insertOne({passengername, crn, price, email});
+        // if (result.insertedId) {
+        //     res.status(201).json({ message: "Flight submitted successfully", id: result.insertedId });
+        // } else {
+        //     res.status(400).send("error submitting");
+        // }
+    } catch (e) {
+        console.error(e);
+        res.status(500).send({ message: e.message });
+    } finally {
+        await client.close();
+    }
+  const passengername = req.body.passengername;
+  const crn = req.body.crn;
+  const price = req.body.price;
+  const email = req.body.email;
+  res.render("confirmation", { passengername, crn, price, email});
 });
 
-app.get('/remove', (req, res) => { //TODO remove from mongodb
-  
+app.get("/remove", (req, res) => {
+  //TODO remove from mongodb
+
   res.render("cancel");
 });
 
-app.post('/delete', (req, res) => {
-  const passenger = req.body.passenger
-  const flightname = req.body.flightname
-  res.render("confirmcancel", {passenger, flightname});
-});
+app.post("/delete", async (req, res) => {
+        const client = new MongoClient(process.env.MONGO_CONNECTION_STRING);
+        try {
+            await client.connect();
+            const db = client.db(process.env.MONGO_DB_NAME);
+            const collection = db.collection(process.env.MONGO_COLLECTION);
+            // Use 'passengername' to match the field name in the document
+            const { passengername, crn, email } = req.body; 
+    
+            console.log("Attempting to delete with:", { passengername, crn, email });
+    
+            // Delete the document based on the matching fields
+            const result = await collection.deleteOne({ passengername, crn, email });
+    
+            if (result.deletedCount === 1) {
+                res.render("confirmcancel", { passengername, crn });
+            } else {
+                console.log("No document found with:", { passengername, crn, email });
+                res.status(404).send({ message: "No matching document found to delete." });
+            }
+        } catch (e) {
+            console.error(e);
+            res.status(500).send({ message: e.message });
+        } finally {
+            await client.close();
+        }
+    });
+    
 
 app.listen(portNumber, () => {
-  console.log(`Web server started and running at http://localhost:${portNumber}`);
+  console.log(
+    `Web server started and running at http://localhost:${portNumber}`
+  );
   startCLI();
 });
 
