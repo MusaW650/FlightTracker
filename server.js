@@ -108,9 +108,9 @@ app.get('/book', (req, res) => { //TODO add to mongodb
 app.post('/booking', (req, res) => {
   const passengername = req.body.passengername; 
   const crn = req.body.crn 
-  const info = req.body.info 
+  const price = req.body.price 
 
-  res.render("confirmation", { passengername, crn, info })
+  res.render("confirmation", { passengername, crn, price })
 });
 
 app.get('/remove', (req, res) => { //TODO remove from mongodb

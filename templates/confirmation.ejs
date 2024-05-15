@@ -4,15 +4,37 @@
 <head>
 	<meta charset="utf-8" />
 	<title>Application</title>
+	<style>
+		#display{
+			display: inline;
+		}
+	</style>
 </head>
-
+<script>
+	function calcPrice(){
+		let inp = "<%= price %>";
+		let p;
+		if (inp ===  "W") {
+			p = 700;
+		} else if (inp === "P"){
+			p = 850;
+		} else if (inp === "E"){
+			p = 1000;
+		}
+		document.querySelector("#display").innerHTML = p;
+	}
+	window.onload = function() {
+			calcPrice();
+		};
+</script>
 <body>
 	<h1>Display Booking</h1>
 		<fieldset>
-			<label for="passenger"><strong>Passenger Name:</strong> <%= passengername %> </label><br>
-        <label for="flight"><strong>CRN:</strong> <%= crn %> </label><br>
-		<label for="info"><strong>Additional Info:</strong> <%= info %> </label><br>
-
+			<label for="passenger"><strong>Passenger Name:</strong> <%= passengername %> </label><br><br></br>
+        <label for="flight"><strong>Airline:</strong> <%= crn %> </label><br><br>
+		<label for="price"><strong>Price:</strong> $<div id="display"></div></label><br><br>
+		
+		<br>
         <strong>Have a safe flight!</strong>
 
 

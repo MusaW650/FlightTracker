@@ -8,31 +8,80 @@
 
   <body>
     <h1>Book Order Form</h1>
-	<script>
-		window.onsubmit = runSubmit;
-		function runSubmit(){
-			pN = process.argv[2];
-            res = `http://localhost:${pN}`;
-            document.getElementById("x").action = res;
-		}
-	</script>
-    <form method ="post" id ="x" action="/booking">
+    <script>
+      window.onsubmit = runSubmit;
+      function runSubmit() {
+        pN = process.argv[2];
+        res = `http://localhost:${pN}`;
+        document.getElementById("x").action = res;
+      }
+    </script>
+    <form method="post" id="x" action="/booking">
       <fieldset>
-        <label><strong>Name:</strong><input type="text" name="passengername" /></label>
-            <label><strong>Email Address:</strong><input type="email" name="email" /></label><br />
-            <label><strong>CRN:</strong><input type="text" name="crn"></label>
-        <div id="hidden">
-            The Price For This Flight is: 
-        </div><!--Diplays the price of the flight once user clicks on the flight.-->
-        <script>
-            // const crn = document.querySelector(`crn`);
-            
-        </script>
+        <label
+          ><strong>Name:</strong
+          ><input type="text" name="passengername" required
+        /></label>
         <br /><br />
-        <strong>Background Information:</strong>
+        <label
+          ><strong>Email Address:</strong
+          ><input type="email" name="email" required /></label
+        ><br /><br />
+        <label
+          ><strong>Flight Number/Airline:</strong
+          ><input type="text" name="crn" required /></label
+        ><br /><br />
+        
         <fieldset>
-          <label> <input type="text" name="info" /></label>
-        </fieldset>
+          <legend><strong>PRICES</strong></legend>
+          <ul>
+            <li>WORKING FLIGHT: $700</li>
+            <li>PREMIUM FLIGHT: $850</li>
+            <li>ELITE FLIGHT: $1000</li>
+          </ul>
+          <br><br>
+            <h3>Please input W for Working, P for Premium, or E for Elite</h3>
+           <label>Input: <input type="text" name="price" required></label>
+
+        </fieldset> 
+      
+        
+
+        <div id="hidden2"><!--WANT TO DISPLAY THIS AFTER USER SUBMITS INFORMATION AND WANTS TO PROCEED-->
+          <br /><br />
+          <u>Credit Card # </u>
+          <input type="text" id="cc1" name="cc1" required />
+          -
+          <input type="text" id="cc2" name="cc2" required />
+          -
+          <input type="text" id="cc3" name="cc3" required />
+          -
+          <input type="text" id="cc4" name="cc4" required />
+
+          <br /><br />
+
+          <label for="shippingAddress"
+            ><u>Shipping Address </u>
+            <input
+              type="text"
+              id="shippingAddress"
+              name="shipping"
+              maxlength="80"
+            />
+          </label>
+
+          <br /><br />
+          <u>Contact Email Address:</u
+          ><input
+            type="email"
+            id="email"
+            placeholder="user@gmail.com"
+            name="email"
+          />
+          <br /><br />
+        </div>
+
+        
       </fieldset>
 
       <br />
