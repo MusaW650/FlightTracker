@@ -1,61 +1,75 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <meta charset="utf-8" />
     <title>Flights</title>
+    <link rel="stylesheet" href="templates/style.css">
     <style>
-        .containerImage {
-            position: fixed; 
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-image: url('/public/planebackground.png');
-            background-size: cover;
-            background-repeat: no-repeat;
-            background-position: center;
-            z-index: -1; 
-        }
-    </style>
-</head>
-<body>
+
+		body{
+			color:black;
+    		background-color: beige;
+			font-size: large;
+			
+		}
+	</style>
+    <!--<style>
+      .containerImage {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-image: url("/public/planebackground.png");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center;
+        z-index: -1;
+      }
+    </style>-->
+  </head>
+  <body>
     <!-- <div class="containerImage"> -->
-<div class="containerImage">
-    <!-- <img src="/public/planebackground.png"> -->
+    <div class="containerImage">
+      <!-- <img src="/public/planebackground.png"> -->
 
-
-    <!-- testing css works regularly-->
-    <style>
+      <!-- testing css works regularly-->
+      <!--<style>
         h1 {
-            color:red;
+          color: red;
         }
-    </style>
+      </style> -->
 
-    <h1>Welcome to Flight Tracker</h1>
-    <h3>Flight Information</h3>
-    <ul>
+      <h1>Welcome to Flight Tracker</h1>
+      <h3>Flight Information</h3>
+      <ul>
         <!-- <li>See all the current flights happening around the world <a href="/viewflights">Application</a></li> -->
-        <li>Fetch Flights by airline and date <a href="/viewflights"> Airline Flights</a></li>
-    </ul>
-    <hr>
-    <h3>Fetch Airline Info</h3>
-    <ul>
-    <li>Fetch informaton about an airline prior to booking with <a href="/airline"> Airline Info </a></li>
-</ul>
+        <li>
+          Fetch Flights by airline and date
+          <a href="/viewflights"> Airline Flights</a>
+        </li>
+      </ul>
+      <hr />
+      <h3>Fetch Airline Info</h3>
+      <ul>
+        <li>
+          Fetch informaton about an airline prior to booking with
+          <a href="/airline"> Airline Info </a>
+        </li>
+      </ul>
 
-    <hr>
-    <h3>Book a Flight</h3>
-    <ul>
-        <li>Click here to book a flight <a href="/book">from our database</a></li>
-    </ul>
-    <hr>
-    <h3>Cancel your flight</h3>
-    <ul>
+      <hr />
+      <h3>Book a Flight</h3>
+      <ul>
+        <li>
+          Click here to book a flight <a href="/book">from our database</a>
+        </li>
+      </ul>
+      <hr />
+      <h3>Cancel your flight</h3>
+      <ul>
         <li>To cancel your flight, click <a href="/remove">here</a></li>
-    </ul>
-  
-    
-</div> 
-
-</body>
+      </ul>
+    </div>
+  </body>
 </html>
