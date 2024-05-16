@@ -110,19 +110,61 @@ app.get("/book", (req, res) => {
 
 app.post("/booking", async (req, res) => {
   const client = new MongoClient(process.env.MONGO_CONNECTION_STRING);
+  let flightsTable = `
+  <h1>Your Flight History</h1>`
+
+;
   try {
         await client.connect();
         const db = client.db(process.env.MONGO_DB_NAME);
         const collection = db.collection(process.env.MONGO_COLLECTION);
-         let {   passengername, crn, price, email } = req.body;
+        
+         let {  passengername, crn, price, email } = req.body;
+         let flightClass = "";
          if (price == "E") {
                 price = 1000;
+                flightClass = "Elite"
          } else if (price == "P") {
                 price = 850;
+                flightClass = "Premium"
          } else {
                 price = 700;
+                flightClass = "Working"
          }
-        const result = await collection.insertOne({passengername, crn, price, email});
+        const creditCard = req.body.cc1 + req.body.cc2 + req.body.cc3 + req.body.cc4;
+
+        const result = await collection.insertOne({passengername, crn, price, email, flightClass, creditCard});
+
+        const allFlights = await collection.find({ passengername, creditCard }).toArray();
+
+        flightsTable += ` <table border="1">
+        <tr>
+            <th>Name</th>
+            <th>Flight Name</th>
+            <th>Class</th>
+
+        </tr>
+        `
+        
+
+        allFlights.forEach(allFlights => {
+          flightsTable += `
+              <tr>
+                  <td>${allFlights.passengername}</td>
+                  <td>${allFlights.crn}</td>
+                  <td>${allFlights.flightClass}</td>
+
+              </tr>
+                `;
+            });
+        flightsTable += '</table>'
+
+      
+    
+
+        
+
+
         // if (result.insertedId) {
         //     res.status(201).json({ message: "Flight submitted successfully", id: result.insertedId });
         // } else {
@@ -134,11 +176,20 @@ app.post("/booking", async (req, res) => {
     } finally {
         await client.close();
     }
+
   const passengername = req.body.passengername;
   const crn = req.body.crn;
   const price = req.body.price;
   const email = req.body.email;
-  res.render("confirmation", { passengername, crn, price, email});
+  const creditCard = req.body.cc1 + req.body.cc2 + req.body.cc3 + req.body.cc4;
+
+
+  
+
+ 
+
+  
+  res.render("confirmation", { passengername, crn, price, email, flightsTable});
 });
 
 app.get("/remove", (req, res) => {
@@ -154,12 +205,15 @@ app.post("/delete", async (req, res) => {
             const db = client.db(process.env.MONGO_DB_NAME);
             const collection = db.collection(process.env.MONGO_COLLECTION);
             // Use 'passengername' to match the field name in the document
-            const { passengername, crn, email } = req.body; 
+            const { passengername, crn, email, cc1, cc2, cc3, cc4 } = req.body; 
+
     
             console.log("Attempting to delete with:", { passengername, crn, email });
     
             // Delete the document based on the matching fields
-            const result = await collection.deleteOne({ passengername, crn, email });
+            const creditCard = cc1 + cc2 + cc3 + cc4;
+
+            const result = await collection.deleteOne({ passengername, crn, email, creditCard });
     
             if (result.deletedCount === 1) {
                 res.render("confirmcancel", { passengername, crn });
@@ -174,6 +228,7 @@ app.post("/delete", async (req, res) => {
             await client.close();
         }
     });
+   
     
 
 app.listen(portNumber, () => {
@@ -189,7 +244,7 @@ function startCLI() {
   process.stdin.on("readable", function () {
     const dataInput = process.stdin.read();
     if (dataInput !== null) {
-      const command = dataInput.trim();
+      const command = dataInput.toString().trim();
       if (command === "stop") {
         console.log("Shutting down the server");
         process.exit(0);
