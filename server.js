@@ -14,6 +14,8 @@ app.set("views", "./templates");
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.static(path.join(__dirname, 'templates')));
+
 
 async function fetchAirlineFlights(ident, time) {
   const fetch = (await import("node-fetch")).default;
