@@ -9,8 +9,16 @@ app.use(express.static("public"));
 const args = process.argv.slice(2);
 const portNumber = args[0];
 
+app.use(express.static(path.join(__dirname, 'public')));
+
 app.set("view engine", "ejs");
+
+
+app.set("views", path.join(__dirname, "templates"));
+
+
 app.set("views", "./templates");
+
 app.use(bodyParser.json());
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
