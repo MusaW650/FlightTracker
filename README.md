@@ -1,4 +1,3 @@
-# FlightTracker...
 # FlightTracker
 - Submission in submit server from Musa Waseem, Directory ID: mwaseem1
 - Group Members: Musa Waseem (mwaseem1), Erfan Hamza (ehamza02), Majd Haddad (mhaddad2)
