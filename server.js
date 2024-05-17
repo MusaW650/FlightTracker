@@ -4,11 +4,13 @@ const bodyParser = require("body-parser");
 require("dotenv").config();
 const path = require("path");
 const { MongoClient, ObjectId } = require("mongodb");
+const port = process.env.PORT || 4000;
+
 
 // Serve static files from the root of the FlightTracker directory
 app.use(express.static(path.join(__dirname)));
 const args = process.argv.slice(2);
-const portNumber = args[0];
+// const portNumber = args[0];
 
 const favicon = require('serve-favicon');
 
@@ -253,9 +255,9 @@ app.post("/delete", async (req, res) => {
    
     
 
-app.listen(portNumber, () => {
+app.listen(port, () => {
   console.log(
-    `Web server started and running at http://localhost:${portNumber}`
+    `Web server started and running at http://localhost:${port}`
   );
   startCLI();
 });
