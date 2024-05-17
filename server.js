@@ -5,11 +5,23 @@ require("dotenv").config();
 const path = require("path");
 const { MongoClient, ObjectId } = require("mongodb");
 
-app.use(express.static("public"));
+// Serve static files from the root of the FlightTracker directory
+app.use(express.static(path.join(__dirname)));
 const args = process.argv.slice(2);
 const portNumber = args[0];
 
-app.use(express.static(path.join(__dirname, 'public')));
+const favicon = require('serve-favicon');
+
+app.use(express.static(path.join(__dirname)));
+
+// Setup favicon
+app.use(favicon(path.join(__dirname, 'favicon_package_v0.16 (1)', 'favicon.ico')));
+
+// Body parser middleware
+app.use(bodyParser.json());
+app.use(express.json());
+app.use(bodyParser.urlencoded({ extended: true }));
+
 
 app.set("view engine", "ejs");
 
